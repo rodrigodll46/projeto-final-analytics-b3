@@ -1,0 +1,7 @@
+streamlit==1.66.1
+pandas>=2.2,<4
+numpy>=2,<3
+plotly>=6,<7
+yfinance>=0.2.65,<2
+SQLAlchemy>=2,<3
+psycopg[binary]>=3.2,<4
