@@ -4,7 +4,14 @@ import numpy as np
 import streamlit as st
 
 from src import charts
-from src.analytics import analyze, enrich_data, export_csv, filter_data
+from src.analytics import (
+    analyze,
+    distribution_stats,
+    enrich_data,
+    export_csv,
+    filter_data,
+    return_correlations,
+)
 from src.config import AUTHOR, COLUMNS, DATA_PATH, END, SECTORS, START, TICKERS, TRADING_DAYS
 from src.database import DataUnavailableError, load_data
 
@@ -119,8 +126,26 @@ c4.metric(
 )
 st.caption("Carteira com pesos iguais no início do recorte, mantida sem rebalanceamento.")
 
-overview, risk, trends, data, method = st.tabs(
-    ["Performance", "Risco e distribuição", "Tendências", "Base de dados", "Metodologia"]
+resilient = metrics.loc[metrics["Drawdown Máximo %"].idxmax()]
+worst_drop = metrics.loc[metrics["Drawdown Máximo %"].idxmin()]
+st.markdown(
+    f"**Leitura executiva do recorte.** {best['Ativo']} liderou o retorno "
+    f"({best['Retorno Acumulado %']:.2f}%). {resilient['Ativo']} teve a menor queda "
+    f"máxima ({resilient['Drawdown Máximo %']:.2f}%), enquanto {worst_drop['Ativo']} "
+    f"atingiu {worst_drop['Drawdown Máximo %']:.2f}%. "
+    "**Aplicação prática:** compare retorno, risco e perdas suportáveis antes de definir "
+    "limites de exposição; resultados históricos não determinam desempenho futuro."
+)
+
+overview, risk, trends, findings, data, method = st.tabs(
+    [
+        "Performance",
+        "Risco e distribuição",
+        "Tendências",
+        "Conclusões",
+        "Base de dados",
+        "Metodologia",
+    ]
 )
 with overview:
     st.subheader("Quanto valeria uma base inicial de 100?")
@@ -134,6 +159,12 @@ with risk:
     st.caption("Frequência percentual por ativo. O boxplot evidencia dispersão e valores extremos.")
     st.subheader("Distância até o topo no período selecionado")
     st.plotly_chart(charts.drawdown(long), width="stretch")
+    st.subheader("Correlação dos retornos diários")
+    st.plotly_chart(charts.correlations(return_correlations(long)), width="stretch")
+    st.caption(
+        "Pearson no recorte. Correlação não implica causalidade e pode mudar entre períodos. "
+        "Séries constantes ou com menos de três retornos não têm correlação estimável."
+    )
 with trends:
     st.subheader("Preço ajustado e médias móveis")
     choices = sorted(filtered["Ativo"].unique())
@@ -144,6 +175,67 @@ with trends:
     st.caption(
         "SMA 21 e SMA 50 usam pregões anteriores ao recorte, dentro de 2021–2023. "
         "No início de 2021, aparecem após 21 e 50 observações disponíveis."
+    )
+    latest = filtered.loc[filtered["Ativo"].eq(ma_ticker)].sort_values("Data").iloc[-1]
+    if latest[["SMA 21", "SMA 50"]].notna().all():
+        position21 = "acima" if latest["Adj Close"] >= latest["SMA 21"] else "abaixo"
+        position50 = "acima" if latest["Adj Close"] >= latest["SMA 50"] else "abaixo"
+        st.info(
+            f"No último pregão, {ma_ticker} fechou {position21} da SMA 21 e "
+            f"{position50} da SMA 50. É uma descrição da tendência observada; "
+            "não constitui sinal validado de compra ou venda."
+        )
+with findings:
+    st.subheader("Respostas às perguntas de negócio")
+    st.markdown(
+        rf"**1 · Capital inicial e retorno.** Uma base de R\$ 100 em {best['Ativo']} "
+        rf"terminaria em R\$ {100 + best['Retorno Acumulado %']:.2f} no recorte, "
+        "considerando o preço ajustado e sem custos ou impostos. "
+        "A aba Performance permite comparar todos os ativos na mesma base."
+    )
+    ranking = metrics.dropna(subset=["Retorno / risco acumulado"])
+    if not ranking.empty:
+        leader = ranking.loc[ranking["Retorno / risco acumulado"].idxmax()]
+        sharpe = ranking.loc[ranking["Sharpe empírico (rf=0)"].idxmax()]
+        st.markdown(
+            f"**2 · Retorno e risco.** {leader['Ativo']} liderou a razão retorno acumulado / "
+            f"volatilidade anualizada ({leader['Retorno / risco acumulado']:.2f}). "
+            f"{sharpe['Ativo']} liderou o Sharpe empírico com taxa livre de risco zero "
+            f"({sharpe['Sharpe empírico (rf=0)']:.2f}). "
+            "São medidas distintas: a primeira reproduz a comparação solicitada no "
+            "enunciado; o Sharpe usa a média dos retornos diários. Ambos são retrospectivos."
+        )
+    else:
+        st.info("Retorno/risco e Sharpe indisponíveis: volatilidade diária nula.")
+    st.dataframe(
+        metrics.sort_values("Retorno / risco acumulado", ascending=False).round(3),
+        hide_index=True,
+        width="stretch",
+    )
+    st.markdown(
+        "**3 · Distribuição e caudas.** Assimetria negativa indica uma cauda mais longa "
+        "à esquerda; excesso de curtose positivo indica caudas mais pesadas que a normal. "
+        "O percentil 5% e a média dos retornos abaixo dele descrevem a cauda observada; "
+        "não são previsões ou garantias de perda máxima."
+    )
+    st.dataframe(distribution_stats(long).round(3), hide_index=True, width="stretch")
+    st.caption(
+        "Retornos, desvios e quantis em %. Assimetria e curtose são adimensionais; "
+        "curtose de Fisher (normal = 0). Assimetria exige 3 retornos e curtose 4; "
+        "amostras menores aparecem sem estimativa."
+    )
+    st.markdown(
+        f"**4 · Resiliência.** {resilient['Ativo']} teve o drawdown menos severo "
+        f"({resilient['Drawdown Máximo %']:.2f}%). {worst_drop['Ativo']} enfrentou "
+        f"o mais severo ({worst_drop['Drawdown Máximo %']:.2f}%). "
+        "O pico é o maior preço observado desde o início da janela, não o topo de toda "
+        "a história anterior a 2021.\n\n"
+        "**5 · Médias móveis.** A aba Tendências compara o fechamento ajustado com "
+        "SMA 21 e SMA 50 e informa a posição no último pregão do ativo escolhido.\n\n"
+        "**Decisão apoiada.** Um gestor pode comparar perfis, dimensionar limites de "
+        "exposição e investigar concentrações com a matriz de correlação. A análise "
+        "não comprova causas macroeconômicas ou setoriais, nem substitui critérios de "
+        "liquidez, adequação, custos e horizonte de investimento."
     )
 with data:
     st.subheader("Dados do seu recorte")
@@ -167,6 +259,16 @@ são preservados como retornados com `auto_adjust=False`.
 **Retorno acumulado:** $(P_f/P_i - 1)\times100$. **Base 100:** $100P_t/P_i$.
 **Volatilidade:** desvio padrão amostral dos retornos simples diários, multiplicado
 por $\sqrt{252}\times100$. O primeiro retorno de cada recorte é excluído.
+
+**Retorno/risco acumulado:** retorno acumulado dividido pela volatilidade anualizada,
+ambos na mesma unidade. **Sharpe empírico (rf=0):** média dos retornos diários
+dividida pelo desvio padrão amostral diário, multiplicada por $\sqrt{252}$.
+A taxa livre de risco é explicitamente zero; não é um Sharpe excedente ao CDI/Selic.
+Séries com volatilidade nula não recebem essas razões.
+
+**Distribuição:** assimetria amostral, excesso de curtose de Fisher, quantis
+empíricos com interpolação linear e média dos retornos menores ou iguais ao
+percentil 5%. Correlação de Pearson calculada sobre retornos diários do recorte.
 
 **Carteira:** média das séries normalizadas, com pesos iniciais iguais e sem
 rebalanceamento. Seu retorno equivale à média dos retornos acumulados dos ativos.

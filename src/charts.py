@@ -1,4 +1,4 @@
-"""Cinco famílias analíticas construídas exclusivamente com Plotly Express."""
+"""Visualizações analíticas construídas exclusivamente com Plotly Express."""
 
 import pandas as pd
 import plotly.express as px
@@ -96,3 +96,17 @@ def moving_averages(frame: pd.DataFrame, ticker: str):
     )
     fig.update_layout(hovermode="x unified")
     return style(fig, "Preço ajustado (R$)")
+
+
+def correlations(matrix: pd.DataFrame):
+    fig = px.imshow(
+        matrix,
+        zmin=-1,
+        zmax=1,
+        color_continuous_scale="RdBu_r",
+        text_auto=".2f",
+        labels={"color": "Correlação"},
+        aspect="auto",
+    )
+    fig.update_layout(coloraxis_colorbar=dict(title="Pearson"))
+    return style(fig, "Ativo", height=max(380, 40 * len(matrix)))
