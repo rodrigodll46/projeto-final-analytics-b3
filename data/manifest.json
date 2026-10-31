@@ -1,0 +1,104 @@
+{
+  "source": "Yahoo Finance via yfinance",
+  "retrieved_at_utc": "2026-10-30T21:20:36.786857+00:00",
+  "requested_start": "2021-01-01",
+  "requested_end_inclusive": "2023-12-31",
+  "yfinance_version": "1.7.0",
+  "rows": 8940,
+  "tickers": [
+    "WEGE3",
+    "EMBR3",
+    "VALE3",
+    "GGBR4",
+    "KLBN11",
+    "PETR4",
+    "PRIO3",
+    "EGIE3",
+    "ITUB4",
+    "BBDC4",
+    "ABEV3",
+    "RENT3"
+  ],
+  "source_symbols": {
+    "WEGE3": "WEGE3.SA",
+    "EMBR3": "EMBJ3.SA",
+    "VALE3": "VALE3.SA",
+    "GGBR4": "GGBR4.SA",
+    "KLBN11": "KLBN11.SA",
+    "PETR4": "PETR4.SA",
+    "PRIO3": "PRIO3.SA",
+    "EGIE3": "EGIE3.SA",
+    "ITUB4": "ITUB4.SA",
+    "BBDC4": "BBDC4.SA",
+    "ABEV3": "ABEV3.SA",
+    "RENT3": "RENT3.SA"
+  },
+  "first_session": "2021-01-04",
+  "last_session": "2023-12-28",
+  "sha256": "d3586b0926f7a920bd891b96a7ada9632d63e77e776d1836b20767a2cf23031d",
+  "financial_volume": "Estimated: Yahoo Close * Yahoo Volume; not official turnover",
+  "annual_sessions_per_ticker": {
+    "ABEV3": {
+      "2021": 247,
+      "2022": 250,
+      "2023": 248
+    },
+    "BBDC4": {
+      "2021": 247,
+      "2022": 250,
+      "2023": 248
+    },
+    "EGIE3": {
+      "2021": 247,
+      "2022": 250,
+      "2023": 248
+    },
+    "EMBR3": {
+      "2021": 247,
+      "2022": 250,
+      "2023": 248
+    },
+    "GGBR4": {
+      "2021": 247,
+      "2022": 250,
+      "2023": 248
+    },
+    "ITUB4": {
+      "2021": 247,
+      "2022": 250,
+      "2023": 248
+    },
+    "KLBN11": {
+      "2021": 247,
+      "2022": 250,
+      "2023": 248
+    },
+    "PETR4": {
+      "2021": 247,
+      "2022": 250,
+      "2023": 248
+    },
+    "PRIO3": {
+      "2021": 247,
+      "2022": 250,
+      "2023": 248
+    },
+    "RENT3": {
+      "2021": 247,
+      "2022": 250,
+      "2023": 248
+    },
+    "VALE3": {
+      "2021": 247,
+      "2022": 250,
+      "2023": 248
+    },
+    "WEGE3": {
+      "2021": 247,
+      "2022": 250,
+      "2023": 248
+    }
+  },
+  "csv_encoding": "UTF-8",
+  "csv_line_ending": "LF"
+}
