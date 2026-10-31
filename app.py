@@ -188,8 +188,8 @@ with trends:
 with findings:
     st.subheader("Respostas às perguntas de negócio")
     st.markdown(
-        f"**1 · Capital inicial e retorno.** Uma base de R$ 100 em {best['Ativo']} "
-        f"terminaria em R$ {100 + best['Retorno Acumulado %']:.2f} no recorte, "
+        rf"**1 · Capital inicial e retorno.** Uma base de R\$ 100 em {best['Ativo']} "
+        rf"terminaria em R\$ {100 + best['Retorno Acumulado %']:.2f} no recorte, "
         "considerando o preço ajustado e sem custos ou impostos. "
         "A aba Performance permite comparar todos os ativos na mesma base."
     )
