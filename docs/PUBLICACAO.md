@@ -69,6 +69,11 @@ Crie a aplicação com estes parâmetros:
 | Python | 3.12 |
 | URL publicada | https://rodrigo-correa-analytics-b3.streamlit.app/ |
 
+A entrega estável fica em `main`, conforme o PDF. O app foi inicialmente criado
+com `codex/analytics-b3`; essa branch é preservada e atualizada por fast-forward
+para espelhar a versão estável. Em uma nova implantação, selecione `main`.
+O histórico de desenvolvimento usa `feature/*` → `develop` → `main` com PRs.
+
 Em **Advanced settings**, preencha os secrets no gerenciador da plataforma.
 Sem secrets, a publicação funciona usando o CSV do repositório.
 O banco fica no servidor; a senha não aparece nos gráficos ou no download.
