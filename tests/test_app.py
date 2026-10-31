@@ -18,6 +18,9 @@ def test_app_metrics_charts_filters_and_reset(monkeypatch, full_frame):
     assert not app.exception
     assert len(app.metric) == 4
     assert len(app.get("plotly_chart")) == 5
+    app.sidebar.button[0].click().run()
+    assert not app.exception
+    assert len(app.metric) == 4
     app.multiselect(key="sectors").set_value(["Financeiro"]).run()
     assert not app.exception
     assert set(app.multiselect(key="tickers").value) == {"ITUB4", "BBDC4"}

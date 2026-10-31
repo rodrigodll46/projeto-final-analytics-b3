@@ -178,7 +178,9 @@ Configure `connect_timeout` no secret para limitar a espera de conexão.
 
 Leituras, validação, aquisição, cálculos, filtros e serialização pesada utilizam
 `@st.cache_data(ttl=3600)`. A consulta SQL também recebe `ttl=3600`.
-**Recarregar fontes** limpa os caches de leitura e reinicializa a conexão.
+**Recarregar fontes** limpa todos os caches de dados, incluindo o cache interno
+da consulta SQL, e reinicializa a conexão. Uma carga explícita no banco também
+invalida todas as camadas de cache no processo que realizou a escrita.
 Após uma substituição do CSV, seu timestamp invalida os caches do carregador
 e do leitor local, permitindo usar o novo snapshot imediatamente.
 

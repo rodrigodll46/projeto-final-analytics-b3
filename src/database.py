@@ -88,8 +88,9 @@ def upload_prices(frame: pd.DataFrame) -> None:
                 set_={c.name: statement.excluded[c.name] for c in table.c if not c.primary_key},
             )
             connection.execute(statement)
-    read_postgresql.clear()
-    load_data.clear()
+    # SQLConnection.query também mantém um cache interno, além dos nossos leitores.
+    # Após uma escrita explícita, invalidar todas as camadas evita reler dados antigos.
+    st.cache_data.clear()
 
 
 def main() -> None:

@@ -6,7 +6,7 @@ import streamlit as st
 from src import charts
 from src.analytics import analyze, enrich_data, export_csv, filter_data
 from src.config import AUTHOR, COLUMNS, DATA_PATH, END, SECTORS, START, TICKERS, TRADING_DAYS
-from src.database import DataUnavailableError, load_data, read_csv, read_postgresql
+from src.database import DataUnavailableError, load_data
 
 st.set_page_config(page_title="B3 | Observatório de mercado", page_icon="📈", layout="wide")
 
@@ -19,9 +19,7 @@ def reset_filters() -> None:
 
 
 def refresh_data() -> None:
-    load_data.clear()
-    read_csv.clear()
-    read_postgresql.clear()
+    st.cache_data.clear()
     # Uma conexão quebrada será reconstruída na próxima tentativa.
     try:
         st.connection("postgresql", type="sql").reset()
