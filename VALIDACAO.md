@@ -1,6 +1,7 @@
 # Evidências de validação
 
 Verificação local realizada em **30/10/2026**, na raiz do projeto.
+Publicação e conferência final realizadas em **31/10/2026**.
 
 ## Resultado
 
@@ -20,6 +21,10 @@ Verificação local realizada em **30/10/2026**, na raiz do projeto.
 | Dependências | pip check: No broken requirements found |
 | Notebook | Estrutura válida; 8 células de código executadas sem erro |
 | Interface | Dashboard carregado no navegador com dados reais e fonte CSV |
+| Publicação | Acesso público sem login, com fonte PostgreSQL no Supabase |
+| Exportação pública | Filtro Energia: 2.235 registros, EGIE3/PETR4/PRIO3, UTF-8 com BOM |
+| Reset público | Retorno aos 12 ativos e ao período completo |
+| Console do navegador | Nenhum erro ou aviso registrado durante a conferência |
 | Secrets | secrets.toml e .venv confirmados no gitignore |
 
 O ambiente isolado local utiliza Python **3.14.3**. Dependências principais:
@@ -27,8 +32,9 @@ Streamlit 1.66.1, pandas 3.1.0, NumPy 2.5.4, Plotly 6.9.0,
 yfinance 1.7.0, SQLAlchemy 2.1.6, psycopg 3.3.6 e pytest 9.2.0.
 Os intervalos de versões para instalação estão em requirements.txt e requirements-dev.txt.
 A matriz de CI para Python 3.11/3.12 e um job com PostgreSQL 16 foram preparados.
-Os três jobs passaram no commit `462926c`. A
-[execução verificada](https://github.com/rodrigodll46/projeto-final-analytics-b3/actions/runs/41154102299)
+Os três jobs passaram no commit `7fce793`, incluindo os testes adicionais de
+separação das conexões de leitura e carga. A
+[execução verificada](https://github.com/rodrigodll46/projeto-final-analytics-b3/actions/runs/41156856308)
 registra os resultados. A integração identificou e permitiu corrigir o cache SQL
 que devolvia resultados antigos após uma carga; o teste passou após a correção.
 
@@ -78,9 +84,16 @@ O job de CI usa outro PostgreSQL descartável, sem acessar o banco de produção
 Os commits publicados registram a preparação real da entrega com autoria de Rodrigo Correa,
 usando o email noreply da conta autenticada, sem datas retroativas.
 
-**Publicação Streamlit:** login e verificação de email concluídos; a plataforma
-solicitou uma autorização adicional do GitHub para repositórios públicos,
-webhooks e Codespaces. A publicação aguarda essa aprovação específica.
+**Publicação Streamlit:** concluída em Python 3.12, usando `app.py` e a branch
+`codex/analytics-b3`. URL pública:
+[rodrigo-correa-analytics-b3.streamlit.app](https://rodrigo-correa-analytics-b3.streamlit.app/).
+O acesso foi conferido em uma sessão sem login. A aplicação exibiu fonte PostgreSQL,
+745 pregões e 12 ativos, com os indicadores do snapshot. O filtro Energia reduziu
+a seleção a três ativos e o retorno médio a 154,12%. O CSV baixado foi lido e
+conferido: 2.235 registros, somente EGIE3/PETR4/PRIO3, datas de 04/01/2021 a
+28/12/2023 e codificação UTF-8 com BOM. O botão Restaurar filtros recuperou o
+universo completo. Somente a conexão `postgresql` do leitor está nos secrets
+da publicação; a conexão administrativa não foi transferida.
 
 **Apresentação:** 9 slides com notas de apresentação, 3 gráficos editáveis e
 2 tabelas. Estrutura, fontes e relações dos gráficos com planilhas incorporadas
@@ -95,3 +108,7 @@ Não foi fornecido o arquivo original da rubrica associado aos marcadores cite.
 ## Evidência visual
 
 ![Dashboard com métricas calculadas sobre o snapshot real](docs/dashboard.png)
+
+![Dashboard público com PostgreSQL, acessado sem login](docs/dashboard-publicado.png)
+
+![Tabela real no Supabase com 8.940 registros](docs/supabase-dados.png)

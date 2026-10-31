@@ -2,6 +2,9 @@
 
 **Autor: Rodrigo Correa**
 
+**Dashboard publicado:** [Abrir Observatório de mercado B3](https://rodrigo-correa-analytics-b3.streamlit.app/).
+Validado em 31/10/2026, com acesso público e PostgreSQL no Supabase como fonte ativa.
+
 Repositório de entrega: [rodrigodll46/projeto-final-analytics-b3](https://github.com/rodrigodll46/projeto-final-analytics-b3).
 Branch de entrega: `codex/analytics-b3`.
 
@@ -11,7 +14,7 @@ Projeto Final de Analytics Financeiro · Linha 2 · Python, Streamlit e Plotly E
 Compara 12 ativos brasileiros no período obrigatório **01/01/2021 a 31/12/2023**.
 O dashboard utiliza PostgreSQL como fonte prioritária e CSV como contingência automática.
 
-![Dashboard B3 com o snapshot real](docs/dashboard.png)
+![Dashboard publicado com PostgreSQL e dados reais](docs/dashboard-publicado.png)
 
 ## Executar
 
@@ -249,8 +252,8 @@ A CI executa lint, formatação e testes em Python 3.11 e 3.12 no GitHub.
 A integração em PostgreSQL 16 verifica upsert, leitura e idempotência em um
 container descartável. Os três jobs passaram na execução registrada em VALIDACAO.md.
 Validação local inicial: Python 3.14.3; versões efetivamente utilizadas registradas
-em `VALIDACAO.md`. A integração com um PostgreSQL remoto precisa ser validada
-com credenciais reais; testes de contingência não substituem essa integração.
+em `VALIDACAO.md`. A integração real com o Supabase também foi validada:
+8.940 registros conferidos contra o CSV, com conexão somente de leitura no app público.
 
 ## Git e entrega acadêmica
 

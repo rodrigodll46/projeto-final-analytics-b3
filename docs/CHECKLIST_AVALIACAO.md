@@ -22,6 +22,8 @@ o PDF original associado aos marcadores cite não foi fornecido.
 | Arquitetura modular | src/etl, schema, database, analytics e charts |
 | EDA | Notebook executado com snapshot real |
 | Git e qualidade | Commits com autoria e workflow de testes |
+| Banco real | Supabase com 8.940 registros conferidos e leitor restrito |
+| Publicação | https://rodrigo-correa-analytics-b3.streamlit.app/ com acesso público validado |
 
 ## Pontos que exigem interpretação da rubrica
 

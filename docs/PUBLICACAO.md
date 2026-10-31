@@ -3,6 +3,12 @@
 Autor: **Rodrigo Correa**. Repositório de entrega:
 [rodrigodll46/projeto-final-analytics-b3](https://github.com/rodrigodll46/projeto-final-analytics-b3).
 
+**Publicação concluída e validada em 31/10/2026:**
+[Abrir dashboard público](https://rodrigo-correa-analytics-b3.streamlit.app/).
+O acesso sem login foi confirmado, com PostgreSQL como fonte ativa, filtros,
+reset e exportação do recorte de Energia conferidos. Os passos abaixo documentam
+a configuração utilizada e permitem reproduzir a implantação.
+
 ## Supabase
 
 Crie um projeto dedicado no plano Free. Escolha a região mais adequada e defina
@@ -61,7 +67,7 @@ Crie a aplicação com estes parâmetros:
 | Branch | codex/analytics-b3 |
 | Main file path | app.py |
 | Python | 3.12 |
-| URL sugerida, sujeita à disponibilidade | rodrigo-correa-analytics-b3.streamlit.app |
+| URL publicada | https://rodrigo-correa-analytics-b3.streamlit.app/ |
 
 Em **Advanced settings**, preencha os secrets no gerenciador da plataforma.
 Sem secrets, a publicação funciona usando o CSV do repositório.
@@ -69,7 +75,7 @@ O banco fica no servidor; a senha não aparece nos gráficos ou no download.
 
 Após o deploy, confira carregamento, fonte ativa, filtros e exportação. Abra
 a URL pública em uma sessão sem login antes de informar o link à avaliação.
-Registre a URL efetiva em README e VALIDACAO somente após a publicação.
+A URL efetiva e as evidências desta implantação constam no README e em VALIDACAO.
 
 ## Referências
 
