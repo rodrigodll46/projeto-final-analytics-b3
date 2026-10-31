@@ -1,6 +1,6 @@
 # Publicação e banco Supabase
 
-Autor: **Rodrigo Correa**. Repositório previsto:
+Autor: **Rodrigo Correa**. Repositório de entrega:
 [rodrigodll46/projeto-final-analytics-b3](https://github.com/rodrigodll46/projeto-final-analytics-b3).
 
 ## Supabase
@@ -10,6 +10,11 @@ a senha do banco diretamente no painel. Não envie senhas pelo chat ou ao GitHub
 O volume do snapshot é pequeno para os limites publicados do plano gratuito.
 Projetos Free podem pausar após inatividade; o CSV mantém a aplicação utilizável.
 
+O projeto desta entrega foi criado no plano Free, região São Paulo, e a carga
+real de 8.940 registros foi conferida contra o CSV. O papel `b3_reader` possui
+SELECT na tabela `public.b3_prices`, sem INSERT, UPDATE, DELETE ou TRUNCATE.
+A tabela usa RLS e a Data API foi desativada. As credenciais ficam fora do Git.
+
 No projeto, abra **Connect**, selecione **Session pooler** e consulte os parâmetros.
 O pooler de sessão suporta IPv4, útil para conexões de servidores sem IPv6.
 Use os valores exatos mostrados pelo painel, pois o host varia por região/projeto.
@@ -17,6 +22,12 @@ Use os valores exatos mostrados pelo painel, pois o host varia por região/proje
 Copie `.streamlit/secrets.supabase.toml.example` para `.streamlit/secrets.toml` e
 preencha host, usuário e senha. A porta de sessão normalmente é 5432, conforme o painel.
 Mantenha `sslmode=require`, o limite do pool e `connect_timeout`.
+
+Na configuração desta entrega, `postgresql` usa o leitor `b3_reader` e
+`postgresql_admin` mantém a credencial de carga somente no arquivo local.
+O carregador escolhe a conexão administrativa quando ela existe.
+Para publicar no Streamlit, transfira exclusivamente o bloco `postgresql`
+e seus subtópicos. Não transfira o bloco `postgresql_admin`.
 
 No SQL Editor do projeto, execute o conteúdo de `sql/supabase_setup.sql`.
 Ele cria a tabela e restringe seu acesso via Data API. Depois, na raiz local:

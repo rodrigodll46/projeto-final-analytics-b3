@@ -64,9 +64,11 @@ def upload_prices(frame: pd.DataFrame) -> None:
     """Idempotente; só grava quando o usuário executa o ETL com --upload."""
     df = validate_data(frame)
     # Leitura explícita via st.secrets, sem valores secretos no código.
-    if "postgresql" not in st.secrets.get("connections", {}):
+    connections = st.secrets.get("connections", {})
+    write_name = "postgresql_admin" if "postgresql_admin" in connections else "postgresql"
+    if write_name not in connections:
         raise DataUnavailableError("Configure [connections.postgresql] em st.secrets.")
-    conn = st.connection("postgresql", type="sql")
+    conn = st.connection(write_name, type="sql")
     metadata = MetaData()
     table = Table(
         "b3_prices",

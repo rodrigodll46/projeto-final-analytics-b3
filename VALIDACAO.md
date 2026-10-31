@@ -10,7 +10,7 @@ Verificação local realizada em **30/10/2026**, na raiz do projeto.
 | Cobertura | 247 pregões em 2021; 250 em 2022; 248 em 2023 |
 | Intervalo efetivo | 04/01/2021 a 28/12/2023 |
 | Integridade | SHA-256 do CSV conferido contra o manifesto |
-| Testes locais | **35 passaram**, 1 teste de integração ignorado localmente |
+| Testes locais | **37 passaram**, 1 teste de integração ignorado localmente |
 | CI Python 3.11 | Lint, formatação e testes aprovados |
 | CI Python 3.12 | Lint, formatação e testes aprovados |
 | CI PostgreSQL 16 | Carga, leitura, atualização e idempotência aprovadas |
@@ -65,19 +65,22 @@ de uma carteira real com custos. As fórmulas e os deltas estão no README e na 
 
 ## Limites da verificação
 
-**Supabase:** provedor escolhido para o banco remoto. A configuração, SQL de
-criação e carga do snapshot estão preparados. A sessão autenticada e a definição
-da senha do banco dependem do titular da conta. O job de CI usa um PostgreSQL
-descartável para verificar upsert e leitura, sem acessar o banco de produção.
-O teste de contingência local foi executado e o dashboard carregou o CSV.
+**Supabase:** projeto `projeto-final-analytics-b3` criado no plano Free, na região
+São Paulo. A carga real foi concluída e o comando de validação confirmou
+8.940 registros, 12 ativos e igualdade com o snapshot. O papel `b3_reader` foi
+criado com autorização do titular da conta. Foram conferidas as permissões:
+SELECT permitido e INSERT, UPDATE, DELETE e TRUNCATE negados. A tabela tem RLS
+e a Data API está desativada. A credencial administrativa permanece local.
+O job de CI usa outro PostgreSQL descartável, sem acessar o banco de produção.
 
 **Git:** repositório público criado em
 [rodrigodll46/projeto-final-analytics-b3](https://github.com/rodrigodll46/projeto-final-analytics-b3).
 Os commits publicados registram a preparação real da entrega com autoria de Rodrigo Correa,
 usando o email noreply da conta autenticada, sem datas retroativas.
 
-**Publicação Streamlit:** preparação completa para Community Cloud. A aceitação
-dos termos e o login precisam ser concluídos pelo titular da conta antes do deploy.
+**Publicação Streamlit:** login e verificação de email concluídos; a plataforma
+solicitou uma autorização adicional do GitHub para repositórios públicos,
+webhooks e Codespaces. A publicação aguarda essa aprovação específica.
 
 **Apresentação:** 9 slides com notas de apresentação, 3 gráficos editáveis e
 2 tabelas. Estrutura, fontes e relações dos gráficos com planilhas incorporadas

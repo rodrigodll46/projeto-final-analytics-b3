@@ -172,6 +172,12 @@ transacional com SQLAlchemy/PostgreSQL, sem apagar a tabela. Para separar permis
 use uma conta de carga com escrita ao executar o ETL e uma conta apenas de leitura
 no dashboard. A aplicação não executa carga ao abrir ou alterar filtros.
 
+Quando `[connections.postgresql_admin]` está configurada localmente, o ETL usa
+essa conexão para a carga. A leitura da aplicação continua usando somente
+`[connections.postgresql]`. Sem a seção administrativa, a carga mantém o
+comportamento original e usa `postgresql`. Na nuvem, publique apenas a conexão
+de leitura, sem o bloco administrativo.
+
 O carregador primeiro tenta o banco e valida sua resposta. Qualquer falha de
 conexão, consulta ou integridade aciona o CSV. Se ambas as fontes falharem,
 a interface informa como gerar a base e interrompe os gráficos de forma controlada.

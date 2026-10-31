@@ -65,3 +65,24 @@ def test_csv_revision_invalidates_inner_cache(monkeypatch, full_frame, tmp_path)
     changed.to_csv(path, index=False)
     second = database.load_data(str(path), revision=2)
     assert second.frame["Adj Close"].iloc[0] != first.frame["Adj Close"].iloc[0]
+
+
+@pytest.mark.parametrize("has_admin", [True, False])
+def test_upload_uses_separate_writer_when_configured(monkeypatch, full_frame, has_admin):
+    class ConnectionSelected(Exception):
+        pass
+
+    selected = []
+    connections = {"postgresql": {}}
+    if has_admin:
+        connections["postgresql_admin"] = {}
+    monkeypatch.setattr(database.st, "secrets", {"connections": connections})
+
+    def connect(name, **kwargs):
+        selected.append(name)
+        raise ConnectionSelected
+
+    monkeypatch.setattr(database.st, "connection", connect)
+    with pytest.raises(ConnectionSelected):
+        database.upload_prices(full_frame)
+    assert selected == ["postgresql_admin" if has_admin else "postgresql"]
