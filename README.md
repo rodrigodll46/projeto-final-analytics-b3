@@ -5,6 +5,8 @@
 Repositório de entrega: [rodrigodll46/projeto-final-analytics-b3](https://github.com/rodrigodll46/projeto-final-analytics-b3).
 Branch de entrega: `codex/analytics-b3`.
 
+[![Qualidade e testes](https://github.com/rodrigodll46/projeto-final-analytics-b3/actions/workflows/ci.yml/badge.svg?branch=codex%2Fanalytics-b3)](https://github.com/rodrigodll46/projeto-final-analytics-b3/actions/workflows/ci.yml)
+
 Projeto Final de Analytics Financeiro · Linha 2 · Python, Streamlit e Plotly Express.
 Compara 12 ativos brasileiros no período obrigatório **01/01/2021 a 31/12/2023**.
 O dashboard utiliza PostgreSQL como fonte prioritária e CSV como contingência automática.
@@ -238,6 +240,8 @@ dependem de acesso à internet. Cobrem fórmulas conhecidas, fronteiras dos filt
 ausência de look-ahead, qualidade, fallback, sigilo das mensagens, ETL e interação
 com os widgets por meio do simulador oficial `AppTest`.
 A CI executa lint, formatação e testes em Python 3.11 e 3.12 no GitHub.
+A integração em PostgreSQL 16 verifica upsert, leitura e idempotência em um
+container descartável. Os três jobs passaram na execução registrada em VALIDACAO.md.
 Validação local inicial: Python 3.14.3; versões efetivamente utilizadas registradas
 em `VALIDACAO.md`. A integração com um PostgreSQL remoto precisa ser validada
 com credenciais reais; testes de contingência não substituem essa integração.

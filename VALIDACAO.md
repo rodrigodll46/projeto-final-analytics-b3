@@ -10,7 +10,10 @@ Verificação local realizada em **30/10/2026**, na raiz do projeto.
 | Cobertura | 247 pregões em 2021; 250 em 2022; 248 em 2023 |
 | Intervalo efetivo | 04/01/2021 a 28/12/2023 |
 | Integridade | SHA-256 do CSV conferido contra o manifesto |
-| Testes locais | **35 passaram**, 1 integração aguardando PostgreSQL efêmero, em 18,67 segundos |
+| Testes locais | **35 passaram**, 1 teste de integração ignorado localmente |
+| CI Python 3.11 | Lint, formatação e testes aprovados |
+| CI Python 3.12 | Lint, formatação e testes aprovados |
+| CI PostgreSQL 16 | Carga, leitura, atualização e idempotência aprovadas |
 | Ruff lint | All checks passed |
 | Ruff format | Formatação aprovada |
 | Compilação Python | app, src e tests sem erro de sintaxe |
@@ -24,7 +27,10 @@ Streamlit 1.66.1, pandas 3.1.0, NumPy 2.5.4, Plotly 6.9.0,
 yfinance 1.7.0, SQLAlchemy 2.1.6, psycopg 3.3.6 e pytest 9.2.0.
 Os intervalos de versões para instalação estão em requirements.txt e requirements-dev.txt.
 A matriz de CI para Python 3.11/3.12 e um job com PostgreSQL 16 foram preparados.
-O resultado de execução fica disponível na aba Actions do repositório.
+Os três jobs passaram no commit `462926c`. A
+[execução verificada](https://github.com/rodrigodll46/projeto-final-analytics-b3/actions/runs/41154102299)
+registra os resultados. A integração identificou e permitiu corrigir o cache SQL
+que devolvia resultados antigos após uma carga; o teste passou após a correção.
 
 ## O que os testes verificam
 
@@ -67,7 +73,7 @@ O teste de contingência local foi executado e o dashboard carregou o CSV.
 
 **Git:** repositório público criado em
 [rodrigodll46/projeto-final-analytics-b3](https://github.com/rodrigodll46/projeto-final-analytics-b3).
-Os commits registram a preparação real da entrega com autoria de Rodrigo Correa,
+Os commits publicados registram a preparação real da entrega com autoria de Rodrigo Correa,
 usando o email noreply da conta autenticada, sem datas retroativas.
 
 **Publicação Streamlit:** preparação completa para Community Cloud. A aceitação
