@@ -14,4 +14,6 @@ htmlcov/
 .coverage
 .test-tmp/
 .artifact-build/
+.chart-data-*/
+.pptx-*/
 artifacts/*.zip

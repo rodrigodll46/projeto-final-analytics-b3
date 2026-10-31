@@ -76,7 +76,9 @@ def save_snapshot(frame: pd.DataFrame) -> dict:
     """Valida antes da escrita e publica o CSV com substituição atômica."""
     df = validate_data(frame)
     DATA_PATH.parent.mkdir(parents=True, exist_ok=True)
-    csv_bytes = df.to_csv(index=False, date_format="%Y-%m-%d", float_format="%.10f").encode()
+    csv_bytes = df.to_csv(
+        index=False, date_format="%Y-%m-%d", float_format="%.10f", lineterminator="\n"
+    ).encode("utf-8")
     report = {
         "source": "Yahoo Finance via yfinance",
         "retrieved_at_utc": datetime.now(UTC).isoformat(),
@@ -89,6 +91,8 @@ def save_snapshot(frame: pd.DataFrame) -> dict:
         "first_session": df["Data"].min().date().isoformat(),
         "last_session": df["Data"].max().date().isoformat(),
         "sha256": hashlib.sha256(csv_bytes).hexdigest(),
+        "csv_encoding": "UTF-8",
+        "csv_line_ending": "LF",
         "financial_volume": "Estimated: Yahoo Close * Yahoo Volume; not official turnover",
         "annual_sessions_per_ticker": {
             ticker: {str(y): int(n) for y, n in g.groupby(g["Data"].dt.year).size().items()}

@@ -16,6 +16,7 @@ def test_snapshot_digest_and_failed_validation_preserves_csv(monkeypatch, full_f
     monkeypatch.setattr(etl, "MANIFEST_PATH", manifest_path)
     report = etl.save_snapshot(full_frame)
     original = data_path.read_bytes()
+    assert b"\r\n" not in original
     assert report["sha256"] == hashlib.sha256(original).hexdigest()
     assert json.loads(manifest_path.read_text(encoding="utf-8"))["rows"] == len(full_frame)
     with pytest.raises(DataQualityError):
