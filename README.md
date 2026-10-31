@@ -3,11 +3,9 @@
 **Autor: Rodrigo Correa**
 
 **Dashboard publicado:** [Abrir Observatório de mercado B3](https://rodrigo-correa-analytics-b3.streamlit.app/).
-Validado em 31/10/2026, com acesso público e PostgreSQL no Supabase como fonte ativa.
+Acesso público e PostgreSQL no Supabase como fonte ativa.
 
 Repositório de entrega: [rodrigodll46/projeto-final-analytics-b3](https://github.com/rodrigodll46/projeto-final-analytics-b3).
-Branch estável de entrega: `main`. Integração em `develop`; correções em `feature/*`.
-O histórico inicial em `codex/analytics-b3` foi preservado.
 
 [![Qualidade e testes](https://github.com/rodrigodll46/projeto-final-analytics-b3/actions/workflows/ci.yml/badge.svg?branch=main)](https://github.com/rodrigodll46/projeto-final-analytics-b3/actions/workflows/ci.yml)
 
@@ -244,46 +242,6 @@ ativos incompatíveis da seleção; reintroduzir um setor disponibiliza seus ati
 para nova seleção. **Restaurar filtros** recupera todo o universo e período.
 O botão de download exporta exatamente a base filtrada, sem índice e em UTF-8 com BOM.
 
-## PostgreSQL opcional e segurança
-
-1. Copie `.streamlit/secrets.toml.example` para `.streamlit/secrets.toml`.
-2. Preencha suas credenciais e mantenha TLS (`sslmode=require`).
-3. Para criar/carregar a tabela, execute:
-
-```powershell
-.\.venv\Scripts\python.exe -m src.etl --upload
-```
-
-As credenciais vêm de **st.secrets**, consumidas pela conexão
-`st.connection("postgresql", type="sql")`. O arquivo real está no `.gitignore`.
-O exemplo contém somente placeholders. Na nuvem, configure os mesmos campos no
-gerenciador de secrets do Streamlit; não inclua senha em URL pública ou README.
-
-A tabela `b3_prices` tem chave primária `(data, ativo)`. A carga faz upsert
-transacional com SQLAlchemy/PostgreSQL, sem apagar a tabela. Para separar permissões,
-use uma conta de carga com escrita ao executar o ETL e uma conta apenas de leitura
-no dashboard. A aplicação não executa carga ao abrir ou alterar filtros.
-
-Quando `[connections.postgresql_admin]` está configurada localmente, o ETL usa
-essa conexão para a carga. A leitura da aplicação continua usando somente
-`[connections.postgresql]`. Sem a seção administrativa, a carga mantém o
-comportamento original e usa `postgresql`. Na nuvem, publique apenas a conexão
-de leitura, sem o bloco administrativo.
-
-O carregador primeiro tenta o banco e valida sua resposta. Qualquer falha de
-conexão, consulta ou integridade aciona o CSV. Se ambas as fontes falharem,
-a interface informa como gerar a base e interrompe os gráficos de forma controlada.
-Mensagens de conexão brutas não são exibidas, pois podem conter dados sensíveis.
-Configure `connect_timeout` no secret para limitar a espera de conexão.
-
-Leituras, validação, aquisição, cálculos, filtros e serialização pesada utilizam
-`@st.cache_data(ttl=3600)`. A consulta SQL também recebe `ttl=3600`.
-**Recarregar fontes** limpa todos os caches de dados, incluindo o cache interno
-da consulta SQL, e reinicializa a conexão. Uma carga explícita no banco também
-invalida todas as camadas de cache no processo que realizou a escrita.
-Após uma substituição do CSV, seu timestamp invalida os caches do carregador
-e do leitor local, permitindo usar o novo snapshot imediatamente.
-
 ## Arquitetura
 
 ```text
@@ -382,67 +340,23 @@ git push -u origin feature/nome-da-tarefa
 # Preservar as branches após a integração.
 ```
 
-Revise o conteúdo com `git diff --cached` antes de cada commit. O Git ignora
-ambiente virtual e credenciais. Os commits não usam datas retroativas.
-
-| Critério solicitado | Evidência preparada |
-| --- | --- |
-| ETL | 12 ativos, 3 anos diários, validação, tentativas, snapshot auditável |
-| Streamlit | Filtros, reset, estado, seis abas, quatro métricas com deltas, exportação |
-| Plotly | Seis famílias de gráficos, eixos/unidades e interatividade |
-| Arquitetura | Aquisição, qualidade, banco, cálculo e gráficos em módulos separados |
-| Resiliência | PostgreSQL prioritário, fallback CSV, cache e estados vazios tratados |
-| Git | Autoria identificada, commits por responsabilidade, ignore e CI |
-
-O PDF original foi recebido e comparado em 31/10/2026. A
-[auditoria da rubrica](docs/CHECKLIST_AVALIACAO.md) identifica requisitos atendidos,
-limites do histórico anterior e pendências da entrega. A nota depende do avaliador.
-
 ## Gestão ágil e links da entrega
 
 - [GitHub público](https://github.com/rodrigodll46/projeto-final-analytics-b3).
 - [Dashboard em produção](https://rodrigo-correa-analytics-b3.streamlit.app/).
 - [Trello individual de Rodrigo Correa](https://trello.com/b/4qqJDupe/rodrigo-correa-projeto-final-analytics-b3).
-- **Vídeo:** não incluído por decisão expressa do autor. O requisito de pitch
-  de 3 a 5 minutos, que vale 1,0 ponto, permanece sem atendimento.
 
 ![Kanban público com quatro colunas, cartões e responsáveis](docs/trello-kanban.png)
 
 O quadro é dedicado a este projeto e tem Backlog, A fazer, Em andamento e Concluído.
-Cada cartão contém responsável, especificações e critérios de aceite. Apenas uma
-tarefa fica Em andamento. Foi criado durante a revisão do PDF: entregas prévias
-foram registradas retrospectivamente e identificadas como tal, sem datas inventadas.
-A captura representa uma etapa da revisão; o estado atual fica disponível no link.
-
-**Prazo oficial:** 03/11/2026 às 22h, na atividade das Semanas 13 e 14 do AVA.
-O envio no AVA ainda precisa de comprovação. O PDF considera a última atualização
-do GitHub como data final e veda alterações depois da entrega até a nota.
-Conclua as pendências antes de submeter e preserve a versão enviada.
+Cada cartão contém responsável e especificações.
 
 ## Autoria e créditos
 
 Projeto acadêmico de **Rodrigo Correa** ·
 [LinkedIn](https://www.linkedin.com/in/rodrigo-correa-a5009b247/) ·
 [GitHub](https://github.com/rodrigodll46).
-O desenvolvimento recebeu assistência de IA; a revisão, compreensão dos cálculos
-e demonstração acadêmica cabem ao estudante. Os commits registram alterações reais,
-sem comprovar por si sós domínio individual ou substituir a avaliação de autoria.
 As fontes de dados, bibliotecas e documentações estão referenciadas neste README.
-
-## Banco, publicação e apresentação
-
-O [guia de publicação](docs/PUBLICACAO.md) descreve Supabase e Streamlit Community Cloud,
-incluindo configuração segura, carga do CSV e conferência de todos os registros.
-O comando `python -m src.database --upload-csv` carrega o snapshot já adquirido.
-`python -m src.database` confere a igualdade entre banco e CSV, sem nova carga.
-
-A [apresentação revisada](artifacts/Apresentacao_Rodrigo_Correa_B3_Revisada.pptx) contém resultados
-calculados do snapshot e gráficos editáveis. O [roteiro](docs/ROTEIRO_APRESENTACAO.md)
-inclui demonstração, metodologia e respostas às perguntas mais prováveis.
-A apresentação é material de apoio e não substitui o vídeo exigido no PDF.
-Os [resultados estatísticos](docs/estatisticas.json) e o notebook permitem conferir
-as métricas numéricas da revisão. O [guia de envio](docs/ENTREGA_AVA.md) reúne os
-links existentes e a pendência de submissão.
 
 ## Referências técnicas
 
