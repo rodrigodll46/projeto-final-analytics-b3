@@ -2,7 +2,14 @@ import numpy as np
 import pandas as pd
 import pytest
 
-from src.analytics import analyze, enrich_data, export_csv, filter_data
+from src.analytics import (
+    analyze,
+    distribution_stats,
+    enrich_data,
+    export_csv,
+    filter_data,
+    return_correlations,
+)
 from src.config import COLUMNS
 
 
@@ -64,3 +71,43 @@ def test_export_is_exact_filtered_base(known_prices):
     assert len(exported) == 3
     assert exported["Ativo"].unique().tolist() == ["WEGE3"]
     assert exported.columns.tolist() == COLUMNS
+
+
+def test_risk_return_ratio_and_daily_sharpe_are_distinct(known_prices):
+    _, metrics, _ = analyze(known_prices)
+    row = metrics.set_index("Ativo").loc["WEGE3"]
+    returns = [0.1, -0.1, 120 / 99 - 1]
+    deviation = np.std(returns, ddof=1)
+    assert row["Retorno / risco acumulado"] == pytest.approx(0.2 / (deviation * np.sqrt(252)))
+    assert row["Sharpe empírico (rf=0)"] == pytest.approx(
+        np.mean(returns) / deviation * np.sqrt(252)
+    )
+
+
+def test_empirical_distribution_with_symmetric_known_tails():
+    long = pd.DataFrame({"Ativo": ["WEGE3"] * 6, "Retorno Diário %": [np.nan, -4, -2, 0, 2, 4]})
+    row = distribution_stats(long).iloc[0]
+    assert row["Observações"] == 5
+    assert row["Média diária %"] == pytest.approx(0)
+    assert row["Desvio diário %"] == pytest.approx(np.sqrt(10))
+    assert row["Assimetria"] == pytest.approx(0)
+    assert row["Excesso de curtose"] == pytest.approx(-1.2)
+    assert row["Percentil 5%"] == pytest.approx(-3.6)
+    assert row["Percentil 95%"] == pytest.approx(3.6)
+    assert row["Média da cauda 5%"] == pytest.approx(-4)
+
+
+def test_zero_volatility_ratios_and_correlation_are_undefined(known_prices):
+    frame = known_prices.copy()
+    frame["Adj Close"] = 100.0
+    long, metrics, _ = analyze(frame)
+    assert metrics["Retorno / risco acumulado"].isna().all()
+    assert metrics["Sharpe empírico (rf=0)"].isna().all()
+    assert return_correlations(long).isna().all().all()
+
+
+def test_short_sample_has_no_kurtosis(known_prices):
+    long, _, _ = analyze(known_prices)
+    stats = distribution_stats(long)
+    assert stats["Observações"].eq(3).all()
+    assert stats["Excesso de curtose"].isna().all()

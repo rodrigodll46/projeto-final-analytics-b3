@@ -17,7 +17,9 @@ def test_app_metrics_charts_filters_and_reset(monkeypatch, full_frame):
     app = app_with_data(monkeypatch, full_frame)
     assert not app.exception
     assert len(app.metric) == 4
-    assert len(app.get("plotly_chart")) == 5
+    assert len(app.get("plotly_chart")) == 6
+    assert len(app.tabs) == 6
+    assert any("Respostas às perguntas" in h.value for h in app.subheader)
     app.sidebar.button[0].click().run()
     assert not app.exception
     assert len(app.metric) == 4

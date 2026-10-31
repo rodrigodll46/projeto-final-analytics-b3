@@ -36,13 +36,20 @@ def analyze(frame: pd.DataFrame) -> tuple[pd.DataFrame, pd.DataFrame, pd.Series]
     normalized = prices.div(prices.iloc[0]).mul(100)
     # Recalcular após o recorte exclui o retorno que começa fora da janela.
     daily = prices.pct_change(fill_method=None)
+    daily_std = daily.std(ddof=1)
+    # Séries constantes não têm razão retorno/risco ou Sharpe definidos.
+    denominator = daily_std.where(daily_std > np.finfo(float).eps)
+    annual_vol = daily_std * np.sqrt(TRADING_DAYS)
     drawdown = (prices.div(prices.cummax()) - 1) * 100
     portfolio = normalized.mean(axis=1)  # Pesos iguais no início, sem rebalanceamento.
     metrics = (
         pd.DataFrame(
             {
                 "Retorno Acumulado %": (normalized.iloc[-1] / 100 - 1) * 100,
-                "Volatilidade Anualizada %": daily.std(ddof=1) * np.sqrt(TRADING_DAYS) * 100,
+                "Volatilidade Anualizada %": annual_vol * 100,
+                "Retorno / risco acumulado": (normalized.iloc[-1] / 100 - 1)
+                / (denominator * np.sqrt(TRADING_DAYS)),
+                "Sharpe empírico (rf=0)": daily.mean() / denominator * np.sqrt(TRADING_DAYS),
                 "Drawdown Máximo %": drawdown.min(),
                 "Volume Financeiro Médio": frame.groupby("Ativo")["Volume Financeiro"].mean(),
                 "Setor": frame.groupby("Ativo")["Setor"].first(),
@@ -64,6 +71,40 @@ def analyze(frame: pd.DataFrame) -> tuple[pd.DataFrame, pd.DataFrame, pd.Series]
         )
         long = long.merge(melted, on=["Data", "Ativo"], validate="one_to_one")
     return long, metrics, portfolio
+
+
+@st.cache_data(ttl=3600)
+def distribution_stats(long: pd.DataFrame) -> pd.DataFrame:
+    """Estatísticas amostrais e quantis empíricos, sem assumir normalidade."""
+    rows = []
+    for ticker, group in long.groupby("Ativo", sort=True):
+        returns = group["Retorno Diário %"].dropna()
+        q05 = returns.quantile(0.05)
+        rows.append(
+            {
+                "Ativo": ticker,
+                "Observações": len(returns),
+                "Média diária %": returns.mean(),
+                "Desvio diário %": returns.std(ddof=1),
+                "Assimetria": returns.skew(),
+                "Excesso de curtose": returns.kurt(),
+                "Percentil 1%": returns.quantile(0.01),
+                "Percentil 5%": q05,
+                "Mediana %": returns.median(),
+                "Percentil 95%": returns.quantile(0.95),
+                "Percentil 99%": returns.quantile(0.99),
+                "Média da cauda 5%": returns.loc[returns.le(q05)].mean(),
+                "Pior dia %": returns.min(),
+            }
+        )
+    return pd.DataFrame(rows)
+
+
+@st.cache_data(ttl=3600)
+def return_correlations(long: pd.DataFrame) -> pd.DataFrame:
+    """Correlação de Pearson dos retornos diários nas datas do recorte."""
+    daily = long.pivot(index="Data", columns="Ativo", values="Retorno Diário %")
+    return daily.corr(min_periods=3)
 
 
 @st.cache_data(ttl=3600)
